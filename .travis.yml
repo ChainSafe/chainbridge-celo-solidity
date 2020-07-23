@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 
 language: node_js
-node_js: 12
+node_js: 10
 
 cache: npm
 
