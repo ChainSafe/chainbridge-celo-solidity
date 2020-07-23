@@ -15,7 +15,8 @@ jobs:
         - SILENT=true make celo-ganache
         - make test
 
-    - name: "Run coverage"
-      script:
-        - ./node_modules/.bin/truffle run coverage -solcoverjs ./scripts/.solcover.js --network test
-        - cat ./coverage/lcov.info | node_modules/.bin/coveralls
+# TODO: Enable once we have tests
+#    - name: "Run coverage"
+#      script:
+#        - ./node_modules/.bin/truffle run coverage -solcoverjs ./scripts/.solcover.js --network test
+#        - cat ./coverage/lcov.info | node_modules/.bin/coveralls
