@@ -10,10 +10,7 @@ compile:
 	npx truffle compile
 
 install-celo-ganache:
-	git clone https://github.com/celo-org/ganache-cli.git
-	npm install --prefix ./ganache-cli
-	ln -f -s  $PWD/ganache-cli/cli.js  ~/.local/bin
-	mv ~/.local/bin/cli.js ~/.local/bin/celo-ganache
+	./scripts/install_celo_ganache.sh
 
 celo-ganache:
 	./scripts/start_celo_ganache.sh
