@@ -1,0 +1,19 @@
+{
+  "name": "chainbridge-celo-solidity",
+  "version": "0.0.1",
+  "description": "ChainBridge solidity contracts for Celo integration",
+  "main": " ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChainSafe/chainbridge-celo-solidity.git"
+  },
+  "author": "ChainSafe Systems",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ChainSafe/chainbridge-celo-solidity/issues"
+  },
+  "homepage": "https://github.com/ChainSafe/chainbridge-celo-solidity#readme"
+}
