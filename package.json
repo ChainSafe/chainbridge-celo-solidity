@@ -4,6 +4,7 @@
   "description": "ChainBridge solidity contracts for Celo integration",
   "main": " ",
   "scripts": {
+    "compile": "truffle compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
