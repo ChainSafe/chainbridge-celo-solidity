@@ -1,6 +1,6 @@
 pragma solidity 0.6.4;
 
-import "./RLPReader.sol";
+import "./RLPReader/RLPReader.sol";
 
 /**
     Based on ProvethVerifier work of:

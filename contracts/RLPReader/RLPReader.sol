@@ -2,13 +2,7 @@
 * @author Hamdi Allam hamdi.allam97@gmail.com
 * Please reach out with any questions or concerns
 * 
-* hamdiallam/Solidity-RLP is licensed under the
-*
-* Apache License 2.0
-* A permissive license whose main conditions require preservation
-* of copyright and license notices. Contributors provide an express
-* grant of patent rights. Licensed works, modifications, and larger
-* works may be distributed under different terms and without source code.
+* https://github.com/hamdiallam/Solidity-RLP/tree/e681e25a376dbd5426b509380bc03446f05d0f97
 */
 pragma solidity 0.6.4;
 
