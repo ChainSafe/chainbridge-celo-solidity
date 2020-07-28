@@ -39,8 +39,6 @@ contract("RLPReader", async (accounts) => {
     let helper;
 
     before(async () => {
-        const reader = await RLPReaderContract.new();
-        RLPReaderHelperContract.link(reader);
         helper = await RLPReaderHelperContract.new();
     });
 
@@ -287,7 +285,7 @@ contract("RLPReader", async (accounts) => {
             totalDifficulty: '10690776258913596267754',
         };
         const rlpHeader = toRLPHeader(block);
-        const result = await helper.toBlockHeader.call(rlpHeader, {});
+        const result = await helper.toBlockHeader.call(rlpHeader);
         assert(result.parentHash == block.parentHash, "parentHash not equal");
         assert(result.sha3Uncles == block.sha3Uncles, "sha3Uncles not equal");
         assert(result.stateRoot  == block.stateRoot,  "stateRoot not equal");
