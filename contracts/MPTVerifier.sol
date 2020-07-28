@@ -308,7 +308,7 @@ contract MPTVerifier {
     /// @param rlpStack is the RLP encoded list of MPT nodes (starting with
     ///        the root) that need to be traversed during verification.
     ///        If some node in the path is directly referenced in another
-    ///        node, it should be additionally added to the list.
+    ///        node, it should NOT be additionally added to the list.
     /// @return value whose inclusion is proved or an empty byte array for
     ///         a proof of exclusion.
     function validateMPTProof(
