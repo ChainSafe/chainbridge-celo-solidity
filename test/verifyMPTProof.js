@@ -46,6 +46,8 @@ contract('MPTVerifier', async (accounts) => {
     const root = [ 0x16, arrayify(hashA) ];
     const hashRoot = Ethers.utils.keccak256(rlp.encode(root));
 
+    const emptyLeafKey = '0x0600';
+
     const verbKey = '0x0604060f';
     const puppyKey = '0x0604060f0607';
     const coinKey = '0x0604060f06070605';
@@ -81,10 +83,48 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, puppyKey, mptStack), puppy);
     });
 
-    it('[smoke] should verify exclusion of key', async () => {
+    it('[smoke] should verify inclusion of 1 byte long value', async () => {
+        const value = '*';
+        const leafRoot = [ 0x31, value ];
+        const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
+        const mptStack = hexlify(rlp.encode([leafRoot]));
+        const key = '0x01';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(value));
+    });
+
+    it('[smoke] should verify inclusion of 32 bytes long value', async () => {
+        const longValue = '*'.repeat(32);
+        const leafRoot = [ 0x31, longValue ];
+        const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
+        const mptStack = hexlify(rlp.encode([leafRoot]));
+        const key = '0x01';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(longValue));
+    });
+
+    it('[smoke] should verify inclusion of very long value', async () => {
+        const longValue = '*'.repeat(1000);
+        const leafRoot = [ 0x31, longValue ];
+        const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
+        const mptStack = hexlify(rlp.encode([leafRoot]));
+        const key = '0x01';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(longValue));
+    });
+
+    it('[smoke] should verify exclusion of key, when key is too long', async () => {
         const mptStack = hexlify(rlp.encode([root, A, B, D]));
-        const missingKey = puppyKey + '01';
+        const missingKey = coinKey + '01';
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, missingKey, mptStack), null);
+    });
+
+    it('[smoke] should verify exclusion of key, when key is pointing to empty leaf', async () => {
+        const mptStack = hexlify(rlp.encode([root, A]));
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, emptyLeafKey, mptStack), null);
+    });
+
+    it('[smoke] should verify exclusion revert on leaf node in the middle of proof', async () => {
+        const mptStack = hexlify(rlp.encode([root, A, B, D]));
+        const missingKey = stallionKey + '01';
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, missingKey, mptStack), 'Leaf in the middle');
     });
 
     it('should revert on root hash mismatch', async () => {
@@ -115,5 +155,37 @@ contract('MPTVerifier', async (accounts) => {
         await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, shortKey, mptStack), 'Key consumed in the middle');
     });
 
-    // TODO: edge cases tests.
+    it('should revert for invalid first nibble in the extension/leaf node', async () => {
+        const invalidRoot = [ 0x46, 'test' ];
+        const hashInvalidRoot = Ethers.utils.keccak256(rlp.encode(invalidRoot));
+        const mptStack = hexlify(rlp.encode([invalidRoot]));
+        const key = '0x06';
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashInvalidRoot, key, mptStack), 'Invalid first nibble');
+    });
+
+    it('should revert when the last node is an extension', async () => {
+        const mptStack = hexlify(rlp.encode([root, A, B]));
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, coinKey, mptStack), 'Extension in the end');
+    });
+
+    it('should revert on invalid nibble in the key', async () => {
+        const mptStack = hexlify(rlp.encode([root, A]));
+        const invalidKey = '0x0610';
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, invalidKey, mptStack), 'Invalid nibble');
+        const invalidKey2 = '0x06ff';
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, invalidKey2, mptStack), 'Invalid nibble');
+    });
+
+    it('should revert on empty leaf node in the middle of proof', async () => {
+        const mptStack = hexlify(rlp.encode([root, A, B]));
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, emptyLeafKey, mptStack), 'Empty leaf in the middle');
+    });
+
+    it('should revert on invalid node length', async () => {
+        const invalidRoot = [ 0x06, 'test', 'extra' ];
+        const hashInvalidRoot = Ethers.utils.keccak256(rlp.encode(invalidRoot));
+        const mptStack = hexlify(rlp.encode([invalidRoot]));
+        const key = '0x06';
+        await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashInvalidRoot, key, mptStack), 'Invalid node length');
+    });
 });
