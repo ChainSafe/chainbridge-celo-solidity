@@ -83,6 +83,32 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, puppyKey, mptStack), puppy);
     });
 
+    it('[smoke] should verify inclusion in root-branch node without key', async () => {
+        const value = '*'.repeat(31);
+        const branchRoot = [ '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', value ];
+        const hashBranchRoot = Ethers.utils.keccak256(rlp.encode(branchRoot));
+        const mptStack = hexlify(rlp.encode([branchRoot]));
+        const key = '0x';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashBranchRoot, key, mptStack), textToBytes(value));
+    });
+
+    it('[smoke] should verify inclusion in root-branch node with key', async () => {
+        const value = '*'.repeat(31);
+        const branchRoot = [ '', '', [ 0x30, value ], '', '', '', [ 0x31, 'something' ], '', '', '', '', '', '', '', '', '', '' ];
+        const hashBranchRoot = Ethers.utils.keccak256(rlp.encode(branchRoot));
+        const mptStack = hexlify(rlp.encode([branchRoot]));
+        const key = '0x0200';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashBranchRoot, key, mptStack), textToBytes(value));
+    });
+
+    it('[smoke] should verify empty root', async () => {
+        const emptyRoot = '';
+        const hashEmptyRoot = Ethers.utils.keccak256(rlp.encode(emptyRoot));
+        const mptStack = hexlify(rlp.encode([]));
+        const key = '0x02';
+        assert.equal(await MPTVerifierInstance.validateMPTProof(hashEmptyRoot, key, mptStack), null);
+    });
+
     it('[smoke] should verify inclusion of 1 byte long value', async () => {
         const value = '*';
         const leafRoot = [ 0x31, value ];
