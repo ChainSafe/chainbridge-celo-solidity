@@ -83,7 +83,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, puppyKey, mptStack), puppy);
     });
 
-    it('[smoke] should verify inclusion in root-branch node without key', async () => {
+    it('should verify inclusion in root-branch node without key', async () => {
         const value = '*'.repeat(31);
         const branchRoot = [ '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', value ];
         const hashBranchRoot = Ethers.utils.keccak256(rlp.encode(branchRoot));
@@ -92,7 +92,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashBranchRoot, key, mptStack), textToBytes(value));
     });
 
-    it('[smoke] should verify inclusion in root-branch node with key', async () => {
+    it('should verify inclusion in root-branch node with key', async () => {
         const value = '*'.repeat(31);
         const branchRoot = [ '', '', [ 0x30, value ], '', '', '', [ 0x31, 'something' ], '', '', '', '', '', '', '', '', '', '' ];
         const hashBranchRoot = Ethers.utils.keccak256(rlp.encode(branchRoot));
@@ -101,7 +101,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashBranchRoot, key, mptStack), textToBytes(value));
     });
 
-    it('[smoke] should verify empty root', async () => {
+    it('should verify empty root', async () => {
         const emptyRoot = '';
         const hashEmptyRoot = Ethers.utils.keccak256(rlp.encode(emptyRoot));
         const mptStack = hexlify(rlp.encode([]));
@@ -109,7 +109,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashEmptyRoot, key, mptStack), null);
     });
 
-    it('[smoke] should verify inclusion of 1 byte long value', async () => {
+    it('should verify inclusion of 1 byte long value', async () => {
         const value = '*';
         const leafRoot = [ 0x31, value ];
         const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
@@ -118,7 +118,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(value));
     });
 
-    it('[smoke] should verify inclusion of 32 bytes long value', async () => {
+    it('should verify inclusion of 32 bytes long value', async () => {
         const longValue = '*'.repeat(32);
         const leafRoot = [ 0x31, longValue ];
         const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
@@ -127,7 +127,7 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(longValue));
     });
 
-    it('[smoke] should verify inclusion of very long value', async () => {
+    it('should verify inclusion of very long value', async () => {
         const longValue = '*'.repeat(1000);
         const leafRoot = [ 0x31, longValue ];
         const hashLeafRoot = Ethers.utils.keccak256(rlp.encode(leafRoot));
@@ -136,18 +136,18 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashLeafRoot, key, mptStack), textToBytes(longValue));
     });
 
-    it('[smoke] should verify exclusion of key, when key is too long', async () => {
+    it('should verify exclusion of key, when key is too long', async () => {
         const mptStack = hexlify(rlp.encode([root, A, B, D]));
         const missingKey = coinKey + '01';
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, missingKey, mptStack), null);
     });
 
-    it('[smoke] should verify exclusion of key, when key is pointing to empty leaf', async () => {
+    it('should verify exclusion of key, when key is pointing to empty leaf', async () => {
         const mptStack = hexlify(rlp.encode([root, A]));
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, emptyLeafKey, mptStack), null);
     });
 
-    it('[smoke] should verify exclusion revert on leaf node in the middle of proof', async () => {
+    it('should revert on leaf node in the middle of proof', async () => {
         const mptStack = hexlify(rlp.encode([root, A, B, D]));
         const missingKey = stallionKey + '01';
         await TruffleAssert.reverts(MPTVerifierInstance.validateMPTProof(hashRoot, missingKey, mptStack), 'Leaf in the middle');
