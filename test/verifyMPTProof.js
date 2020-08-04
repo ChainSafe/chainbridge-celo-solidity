@@ -83,6 +83,18 @@ contract('MPTVerifier', async (accounts) => {
         assert.equal(await MPTVerifierInstance.validateMPTProof(hashRoot, puppyKey, mptStack), puppy);
     });
 
+    it('[smoke] should verify value inclusion', async () => {
+        const mptStack = hexlify(rlp.encode([root, A]));
+        const valueHash = hexlify(Ethers.utils.keccak256(arrayify(stallion)))
+        assert.isTrue(await MPTVerifierInstance.validateMPTValueInclusion(hashRoot, stallionKey, mptStack, valueHash));
+    });
+
+    it('[smoke] should verify value exclusion', async () => {
+        const mptStack = hexlify(rlp.encode([root, A]));
+        const valueHash = hexlify(Ethers.utils.keccak256(arrayify(coin)))
+        assert.isFalse(await MPTVerifierInstance.validateMPTValueInclusion(hashRoot, stallionKey, mptStack, valueHash));
+    });
+
     it('should verify inclusion in root-branch node without key', async () => {
         const value = '*'.repeat(31);
         const branchRoot = [ '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', value ];

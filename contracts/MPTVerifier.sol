@@ -34,7 +34,7 @@ import "./RLPReader/RLPReader.sol";
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-*/
+ */
 
 /**
     @title Allows to validate Merkle-Patricia Trie proofs.
@@ -113,15 +113,17 @@ contract MPTVerifier {
         return i;
     }
 
-    /// @dev Computes the hash of the Merkle-Patricia-Trie hash of the input.
-    ///      Merkle-Patricia-Tries use a weird "hash function" that outputs
-    ///      *variable-length* hashes: If the input is shorter than 32 bytes,
-    ///      the MPT hash is the input. Otherwise, the MPT hash is the
-    ///      Keccak-256 hash of the input.
-    ///      The easiest way to compare variable-length byte sequences is
-    ///      to compare their Keccak-256 hashes.
-    /// @param input The byte sequence to be hashed.
-    /// @return Keccak-256(MPT-hash(input))
+    /**
+        @dev Computes the hash of the Merkle-Patricia-Trie hash of the input.
+             Merkle-Patricia-Tries use a weird "hash function" that outputs
+             *variable-length* hashes: If the input is shorter than 32 bytes,
+             the MPT hash is the input. Otherwise, the MPT hash is the
+             Keccak-256 hash of the input.
+             The easiest way to compare variable-length byte sequences is
+             to compare their Keccak-256 hashes.
+        @param input The byte sequence to be hashed.
+        @return Keccak-256(MPT-hash(input))
+     */
     function mptHashHash(bytes memory input) internal pure returns (bytes32) {
         if (input.length < 32) {
             return keccak256(input);
@@ -130,18 +132,20 @@ contract MPTVerifier {
         }
     }
 
-    /// @dev Validates a Merkle-Patricia-Trie proof.
-    ///      If the proof proves the inclusion of some key-value pair in the
-    ///      trie, the value is returned. Otherwise, i.e. if the proof proves
-    ///      the exclusion of a key from the trie, an empty byte array is
-    ///      returned.
-    /// @param rootHash is the Keccak-256 hash of the root node of the MPT.
-    /// @param mptKey is the key (consisting of nibbles) of the node whose
-    ///        inclusion/exclusion we are proving.
-    /// @param stack is the stack of MPT nodes (starting with the root) that
-    ///        need to be traversed during verification.
-    /// @return value whose inclusion is proved or an empty byte array for
-    ///         a proof of exclusion
+    /**
+        @dev Validates a Merkle-Patricia-Trie proof.
+             If the proof proves the inclusion of some key-value pair in the
+             trie, the value is returned. Otherwise, i.e. if the proof proves
+             the exclusion of a key from the trie, an empty byte array is
+             returned.
+        @param rootHash is the Keccak-256 hash of the root node of the MPT.
+        @param mptKey is the key (consisting of nibbles) of the node whose
+               inclusion/exclusion we are proving.
+        @param stack is the stack of MPT nodes (starting with the root) that
+               need to be traversed during verification.
+        @return value whose inclusion is proved or an empty byte array for
+                a proof of exclusion
+     */
     function validateMPTProof(
         bytes32 rootHash,
         bytes memory mptKey,
@@ -200,16 +204,18 @@ contract MPTVerifier {
                 mptKeyOffset += prefixLength;
 
                 if (prefixLength < nodeKey.length) {
-                    // Proof claims divergent extension or leaf. (Only
-                    // relevant for proofs of exclusion.)
-                    // An Extension/Leaf node is divergent iff it "skips" over
-                    // the point at which a Branch node should have been had the
-                    // excluded key been included in the trie.
-                    // Example: Imagine a proof of exclusion for path [1, 4],
-                    // where the current node is a Leaf node with
-                    // path [1, 3, 3, 7]. For [1, 4] to be included, there
-                    // should have been a Branch node at [1] with a child
-                    // at 3 and a child at 4.
+                    /**
+                        Proof claims divergent extension or leaf. (Only
+                        relevant for proofs of exclusion.)
+                        An Extension/Leaf node is divergent iff it "skips" over
+                        the point at which a Branch node should have been had the
+                        excluded key been included in the trie.
+                        Example: Imagine a proof of exclusion for path [1, 4],
+                        where the current node is a Leaf node with
+                        path [1, 3, 3, 7]. For [1, 4] to be included, there
+                        should have been a Branch node at [1] with a child
+                        at 3 and a child at 4.
+                     */
 
                     // Sanity check
                     if (i < stack.length - 1) {
@@ -297,20 +303,22 @@ contract MPTVerifier {
         }
     }
     
-    /// @dev Validates a Merkle-Patricia-Trie proof.
-    ///      If the proof proves the inclusion of some key-value pair in the
-    ///      trie, the value is returned. Otherwise, i.e. if the proof proves
-    ///      the exclusion of a key from the trie, an empty byte array is
-    ///      returned.
-    /// @param rootHash is the Keccak-256 hash of the root node of the MPT.
-    /// @param mptPath is the key (consisting of nibbles) of the node whose
-    ///        inclusion/exclusion we are proving. Single nibble per byte.
-    /// @param rlpStack is the RLP encoded list of MPT nodes (starting with
-    ///        the root) that need to be traversed during verification.
-    ///        If some node in the path is directly referenced in another
-    ///        node, it should NOT be additionally added to the list.
-    /// @return value whose inclusion is proved or an empty byte array for
-    ///         a proof of exclusion.
+    /**
+        @dev Validates a Merkle-Patricia-Trie proof.
+             If the proof proves the inclusion of some key-value pair in the
+             trie, the value is returned. Otherwise, i.e. if the proof proves
+             the exclusion of a key from the trie, an empty byte array is
+             returned.
+        @param rootHash is the Keccak-256 hash of the root node of the MPT.
+        @param mptPath is the key (consisting of nibbles) of the node whose
+               inclusion/exclusion we are proving. Single nibble per byte.
+        @param rlpStack is the RLP encoded list of MPT nodes (starting with
+               the root) that need to be traversed during verification.
+               If some node in the path is directly referenced in another
+               node, it should NOT be additionally added to the list.
+        @return value whose inclusion is proved or an empty byte array for
+                a proof of exclusion.
+     */
     function validateMPTProof(
         bytes32 rootHash,
         bytes calldata mptPath,
@@ -322,5 +330,34 @@ contract MPTVerifier {
             rootHash,
             mptPath,
             RLPReader.toList(RLPReader.toRlpItem(rlpStack)));
+    }
+
+    /**
+        @dev Validates a Merkle-Patricia-Trie value inclusion.
+        @param rootHash is the Keccak-256 hash of the root node of the MPT.
+        @param mptPath is the key (consisting of nibbles) of the node whose
+               inclusion/exclusion we are proving. Single nibble per byte.
+        @param rlpStack is the RLP encoded list of MPT nodes (starting with
+               the root) that need to be traversed during verification.
+               If some node in the path is directly referenced in another
+               node, it should NOT be additionally added to the list.
+        @param valueHash is the Keccak-256 hash of the value which inclusion
+               is validated.
+        @return isIncluded true if the provided valueHash equals to the included
+                value hash, false otherwise.
+     */
+    function validateMPTValueInclusion(
+        bytes32 rootHash,
+        bytes calldata mptPath,
+        bytes calldata rlpStack,
+        bytes32 valueHash
+    ) external pure returns (
+        bool isIncluded
+    ) {
+        bytes memory includedValue = validateMPTProof(
+            rootHash,
+            mptPath,
+            RLPReader.toList(RLPReader.toRlpItem(rlpStack)));
+        return valueHash == keccak256(includedValue);
     }
 }
