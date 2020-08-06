@@ -5,7 +5,7 @@
 const TruffleAssert = require('truffle-assertions');
 const Ethers = require('ethers');
 
-const Helpers = require('@chainSafe/chainbridge-solidity/test/helpers');
+const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 const { signatureHeader, aggregatePublicKey, g1, hashedMessage,
     rootHash, key, nodes, preimagePart } = require("../../proofData");
 

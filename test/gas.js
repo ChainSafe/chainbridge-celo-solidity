@@ -4,7 +4,7 @@
  */
 const Ethers = require('ethers');
 
-const Helpers = require('@chainSafe/chainbridge-solidity/test/helpers');
+const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 
 const BridgeContract = artifacts.require("Bridge");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
