@@ -302,6 +302,19 @@ contract MPTVerifier {
             }
         }
     }
+
+    function _validateMPTProof(
+        bytes32 rootHash,
+        bytes memory mptPath,
+        bytes memory rlpStack
+    ) internal pure returns (
+        bytes memory value
+    ) {
+        return validateMPTProof(
+            rootHash,
+            mptPath,
+            rlpStack.toRlpItem().toList());
+    }
     
     /**
         @dev Validates a Merkle-Patricia-Trie proof.
@@ -326,10 +339,7 @@ contract MPTVerifier {
     ) external pure returns (
         bytes memory value
     ) {
-        return validateMPTProof(
-            rootHash,
-            mptPath,
-            RLPReader.toList(RLPReader.toRlpItem(rlpStack)));
+        return _validateMPTProof(rootHash, mptPath, rlpStack);
     }
 
     /**
@@ -354,10 +364,10 @@ contract MPTVerifier {
     ) external pure returns (
         bool isIncluded
     ) {
-        bytes memory includedValue = validateMPTProof(
+        bytes memory includedValue = _validateMPTProof(
             rootHash,
             mptPath,
-            RLPReader.toList(RLPReader.toRlpItem(rlpStack)));
+            rlpStack);
         return valueHash == keccak256(includedValue);
     }
 }
