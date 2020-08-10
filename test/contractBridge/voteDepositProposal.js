@@ -245,6 +245,17 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         await TruffleAssert.reverts(executeProposal(relayer1Address), "Proposal must have Passed status");
     });
 
+    it('Proposal cannot be executed with invalid Merkle proof', async () => {
+        const wrongKey = '0x01';
+        const customPreimagePart = rootHash.slice(2) + wrongKey.slice(2) + nodes.slice(2) +
+            aggregatePublicKey.slice(2) + hashedMessage.slice(2) + signatureHeader.slice(2);
+        const customDepositDataHash = Ethers.utils.keccak256(DestinationERC20HandlerInstance.address + depositData.substr(2) + customPreimagePart);
+        BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer1Address });
+        BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer2Address });
+        BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer3Address });
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, wrongKey, nodes, { from: relayer1Address }), "Unable to Verify Merkle Proof");
+    });
+
     it('Execution requires active proposal', async () => {
         await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes, { from: relayer1Address }), "Proposal must have Passed status");
     });
