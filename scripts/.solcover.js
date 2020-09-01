@@ -1,5 +1,5 @@
 module.exports = {
-  providerOptions: {
+    providerOptions: {
         "port" : 8545
-  }
+    }
 };
