@@ -19,6 +19,9 @@ install-celo-ganache:
 celo-ganache:
 	./scripts/start_celo_ganache.sh
 
+celo-node:
+	./scripts/install_celo_node.sh
+
 bindings: compile
 	@echo " > \033[32mCreating go bindings for ethereum contracts... \033[0m "
 	./scripts/create_bindings.sh
