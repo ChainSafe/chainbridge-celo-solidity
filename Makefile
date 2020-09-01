@@ -1,5 +1,9 @@
 URL?=http://localhost:8545
 
+install-deps:
+	@echo " > \033[32mInstalling dependencies... \033[0m "
+	./scripts/install_deps.sh
+
 .PHONY: test
 test:
 	@echo " > \033[32mTesting contracts... \033[0m "
