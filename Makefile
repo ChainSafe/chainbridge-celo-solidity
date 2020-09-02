@@ -19,7 +19,7 @@ install-celo-ganache:
 celo-ganache:
 	./scripts/start_celo_ganache.sh
 
-celo-node:
+install-celo-node:
 	./scripts/install_celo_node.sh
 
 bindings: compile

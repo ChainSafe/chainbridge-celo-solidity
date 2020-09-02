@@ -18,5 +18,5 @@ if [ -x "$(command -v celo-abigen)" ]
 then
   echo "celo-abigen found, skipping install"
 else
-  make celo-node
+  make install-celo-node
 fi
