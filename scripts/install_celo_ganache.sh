@@ -6,7 +6,7 @@
 # Exit on failure
 set -eux
 
-git clone https://github.com/celo-org/ganache-cli.git
+git clone --depth 1 https://github.com/celo-org/ganache-cli.git
 npm install --prefix ./ganache-cli
 mkdir -p ~/.local/bin
 ln -f -s  $PWD/ganache-cli/cli.js  ~/.local/bin/celo-ganache
