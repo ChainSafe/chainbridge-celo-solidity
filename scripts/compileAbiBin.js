@@ -12,6 +12,10 @@ const ABI_PATH = BUILD_PATH + "abi/"
 const BIN_PATH = BUILD_PATH + "bin/"
 const RUNTIME_PATH = BUILD_PATH + "runtime/"
 
+const isConstant = function (mutability) {
+    return mutability === "pure" || mutability === "view";
+};
+
 // Loop through all the files in the temp directory
 fs.readdir("./build/contracts", function (err, files) {
     if (err) {
@@ -36,11 +40,17 @@ fs.readdir("./build/contracts", function (err, files) {
 
     files.forEach(function (file, index) {
         const basename = file.split(".")[0];
-        const path = './build/contracts/' + file
+        const path = './build/contracts/' + file;
         let rawdata = fs.readFileSync(path);
         let contract = JSON.parse(rawdata);
-        let { abi, bytecode} = contract;
+        let { abi, bytecode } = contract;
         bytecode = bytecode.substring(2);
+        // Adding missing constant properties.
+        abi.forEach(function (func) {
+            if (!func.constant && func.type !== "event") {
+                func.constant = isConstant(func.stateMutability);
+            }
+        });
 
         if (abi.length === 0) return;
         fs.writeFileSync(ABI_PATH + basename + ".abi"  , JSON.stringify(abi));
