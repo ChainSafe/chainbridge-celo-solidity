@@ -439,7 +439,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
         bytes memory signatureHeader,
         bytes memory aggregatePublicKey,
         bytes memory g1,
-        bytes memory hashedMessage,
+        bytes32 hashedMessage,
         bytes32 rootHash,
         bytes memory key,
         bytes memory nodes
@@ -472,7 +472,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
         bytes memory /* signatureHeader */,
         bytes memory /* aggregatePublicKey */,
         bytes memory /* g1 */,
-        bytes memory /* hashedMessage */
+        bytes32 /* hashedMessage */
     ) internal pure returns (bool) {
         // TODO: add implementation.
         return true;
