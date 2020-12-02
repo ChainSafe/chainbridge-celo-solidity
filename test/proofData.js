@@ -10,11 +10,12 @@ const { arrayify, hexlify } = Ethers.utils;
 const signatureHeader = '0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca';
 const aggregatePublicKey = signatureHeader;
 const g1 = signatureHeader;
-const hashedMessage = signatureHeader;
+const hashedMessage = Ethers.utils.keccak256(rlp.encode(signatureHeader));;
 
 const value = '*';
 const branchRoot = [ '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', value ];
 const rootHash = Ethers.utils.keccak256(rlp.encode(branchRoot));
+
 const key = '0x';
 const nodes = hexlify(rlp.encode([branchRoot]));
 
