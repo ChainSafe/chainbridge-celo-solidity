@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Run tests
 
 on:
@@ -22,12 +19,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Set env
-          run: echo '::set-env name=workspace::$GITHUB_WORKSPACE'
-          - name: Dump GitHub context
-            env:
-              GITHUB_CONTEXT: ${{ toJson(env) }}
+        run: echo ::set-env name=workspace::$GITHUB_WORKSPACE
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(env) }}
             run: echo "$GITHUB_CONTEXT"
-#        run: make install-celo-ganache
+      - name: install celo ganache
         run: |
           mkdir -p $GITHUB_WORKSPACE/bin
           git clone --depth 1 https://github.com/celo-org/ganache-cli.git
