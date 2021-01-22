@@ -23,7 +23,7 @@ jobs:
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(env) }}
-            run: echo "$GITHUB_CONTEXT"
+        run: echo "$GITHUB_CONTEXT"
       - name: install celo ganache
         run: |
           mkdir -p $GITHUB_WORKSPACE/bin
