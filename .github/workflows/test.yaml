@@ -18,8 +18,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set env
-        run: echo $PATH
+      - name: NPM install
+        run: npm install
       - name: install celo ganache
         run: |
           git clone --depth 1 https://github.com/celo-org/ganache-cli.git
