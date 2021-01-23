@@ -48,4 +48,3 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        run: echo ::set-env name=COVERAGE::$(cat ./coverage/lcov.info | node_modules/.bin/coveralls)
