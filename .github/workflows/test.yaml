@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x]
-    name:
+    steps:
       - name: Run coverage
         run: ./node_modules/.bin/truffle run coverage -solcoverjs ./scripts/.solcover.js --network test
       - name: Cover
