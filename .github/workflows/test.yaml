@@ -44,12 +44,8 @@ jobs:
         run: npm install
       - name: Run coverage
         run: ./node_modules/.bin/truffle run coverage -solcoverjs ./scripts/.solcover.js --network test
-      - name: Cover
-        run: echo ::set-env name=COVERAGE::$(cat ./coverage/lcov.info | node_modules/.bin/coveralls)
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v1
+      - name: Coverall
+        uses: coverallsapp/github-action@master
         with:
-          issue-number: ${{github.event.number}}
-          body: |
-            Test coverage is ${{ env.COVERAGE }}% :sparkles: :sparkles: :sparkles:
-
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: echo ::set-env name=COVERAGE::$(cat ./coverage/lcov.info | node_modules/.bin/coveralls)
