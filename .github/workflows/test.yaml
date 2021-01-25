@@ -25,7 +25,7 @@ jobs:
           git clone --depth 1 https://github.com/celo-org/ganache-cli.git
           npm install --prefix ./ganache-cli
       - name: Start celo-ganache
-        run: SILENT=true ./scripts/start_celo_ganache.sh
+        run: ./scripts/start_celo_ganache_ci.sh
       - name: Test
         run: make test
   coverage:
