@@ -1,0 +1,50 @@
+name: Run tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: NPM install
+        run: npm install
+      - name: install celo ganache
+        run: |
+          git clone --depth 1 https://github.com/celo-org/ganache-cli.git
+          npm install --prefix ./ganache-cli
+      - name: Start celo-ganache
+        run: ./scripts/start_celo_ganache_ci.sh
+      - name: Test
+        run: make test
+  coverage:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: NPM install
+        run: npm install
+      - name: Run coverage
+        run: ./node_modules/.bin/truffle run coverage -solcoverjs ./scripts/.solcover.js --network test
+      - name: Coverall
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
