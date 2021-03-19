@@ -9,7 +9,6 @@ const { arrayify, hexlify } = Ethers.utils;
 
 const signatureHeader = '0xff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335caff5c6287761305d7d8ae76ca96f6cb48e48aa04cf3c9280619c8993f21e335ca';
 const aggregatePublicKey = signatureHeader;
-const g1 = signatureHeader;
 const hashedMessage = Ethers.utils.keccak256(rlp.encode(signatureHeader));;
 
 const value = '*';
@@ -25,7 +24,6 @@ const preimagePart = rootHash.slice(2) + key.slice(2) + nodes.slice(2) +
 module.exports = {
     signatureHeader,
     aggregatePublicKey,
-    g1,
     hashedMessage,
     rootHash,
     key,

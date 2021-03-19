@@ -421,7 +421,6 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
         @param data Data originally provided when deposit was made.
         @param signatureHeader for the validator proof.
         @param aggregatePublicKey for the validator proof.
-        @param g1 Generator for Group 1 for the validator proof.
         @param hashedMessage hash of the message signed for the validator proof.
         @param rootHash is the Keccak-256 hash of the root node of the MPT.
         @param key consisting of nibbles of the transaction MPT proof. Single nibble per byte.
@@ -438,7 +437,6 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
         bytes32 resourceID,
         bytes memory signatureHeader,
         bytes memory aggregatePublicKey,
-        bytes memory g1,
         bytes32 hashedMessage,
         bytes32 rootHash,
         bytes memory key,
@@ -456,7 +454,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
 
         require(proposal._status == ProposalStatus.Passed, "Proposal must have Passed status");
         require(mem.dataHash == proposal._dataHash, "Data doesn't match datahash");
-        require(verifyValidatorSignatures(signatureHeader, aggregatePublicKey, g1, hashedMessage),
+        require(verifyValidatorSignatures(signatureHeader, aggregatePublicKey, hashedMessage),
             "Unable to verify signed header");
         require(MPTVerifier._validateMPTProof(mem.rootHash, key, nodes).length > 0, "Unable to Verify Merkle Proof");
 
@@ -471,7 +469,6 @@ contract Bridge is Pausable, AccessControl, SafeMath, MPTVerifier {
     function verifyValidatorSignatures(
         bytes memory /* signatureHeader */,
         bytes memory /* aggregatePublicKey */,
-        bytes memory /* g1 */,
         bytes32 /* hashedMessage */
     ) internal pure returns (bool) {
         // TODO: add implementation.
