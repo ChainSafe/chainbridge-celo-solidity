@@ -11,7 +11,7 @@ const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 const BridgeContract = artifacts.require("Bridge");
 const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const { signatureHeader, aggregatePublicKey, g1, hashedMessage,
+const { signatureHeader, aggregatePublicKey, hashedMessage,
     rootHash, key, nodes, preimagePart } = require("../proofData");
 
 contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) => {
@@ -70,7 +70,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         ]);
 
         vote = (relayer) => BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, depositDataHash, { from: relayer });
-        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes, { from: relayer });
+        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer });
     });
 
     it ('[sanity] bridge configured with threshold and relayers', async () => {
@@ -253,11 +253,11 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer1Address });
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer2Address });
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer3Address });
-        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, wrongKey, nodes, { from: relayer1Address }), "Unable to Verify Merkle Proof");
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, wrongKey, nodes, { from: relayer1Address }), "Unable to Verify Merkle Proof");
     });
 
     it('Execution requires active proposal', async () => {
-        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes, { from: relayer1Address }), "Proposal must have Passed status");
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer1Address }), "Proposal must have Passed status");
     });
 
     it('Voting requires resourceID that is mapped to a handler', async () => {

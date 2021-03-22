@@ -11,7 +11,7 @@ const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 const BridgeContract = artifacts.require("Bridge");
 const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const { signatureHeader, aggregatePublicKey, g1, hashedMessage,
+const { signatureHeader, aggregatePublicKey, hashedMessage,
     rootHash, key, nodes, preimagePart } = require("../proofData");
 
 contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) => {
@@ -68,7 +68,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         ]);
 
         vote = (relayer) => BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, depositDataHash, { from: relayer });
-        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes, { from: relayer });
+        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer });
     });
 
     it ('[sanity] bridge configured with threshold, relayers, and expiry', async () => {

@@ -2,7 +2,7 @@ const TruffleAssert = require('truffle-assertions');
 const Ethers = require('ethers');
 
 const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
-const { signatureHeader, aggregatePublicKey, g1, hashedMessage,
+const { signatureHeader, aggregatePublicKey, hashedMessage,
     rootHash, key, nodes, preimagePart } = require("../../proofData");
 
 const BridgeContract = artifacts.require("Bridge");
@@ -144,7 +144,6 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
             destinationResourceID,
             signatureHeader,
             aggregatePublicKey,
-            g1,
             hashedMessage,
             rootHash,
             key,
@@ -205,7 +204,6 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
             originResourceID,
             signatureHeader,
             aggregatePublicKey,
-            g1,
             hashedMessage,
             rootHash,
             key,

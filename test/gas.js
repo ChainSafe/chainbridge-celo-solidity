@@ -17,7 +17,7 @@ const NoArgumentContract = artifacts.require("NoArgument");
 const OneArgumentContract = artifacts.require("OneArgument");
 const TwoArgumentsContract = artifacts.require("TwoArguments");
 const ThreeArgumentsContract = artifacts.require("ThreeArguments");
-const { signatureHeader, aggregatePublicKey, g1, hashedMessage,
+const { signatureHeader, aggregatePublicKey, hashedMessage,
     rootHash, key, nodes, preimagePart } = require("./proofData");
 
 contract('Gas Benchmark - [Execute Proposal]', async (accounts) => {
@@ -54,7 +54,7 @@ contract('Gas Benchmark - [Execute Proposal]', async (accounts) => {
 
     const deposit = (resourceID, depositData) => BridgeInstance.deposit(chainID, resourceID, depositData, { from: depositerAddress });
     const vote = (resourceID, depositNonce, depositDataHash) => BridgeInstance.voteProposal(chainID, depositNonce, resourceID, depositDataHash, { from: relayerAddress });
-    const execute = (depositNonce, depositData, resourceID) => BridgeInstance.executeProposal(chainID, depositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, rootHash, key, nodes);
+    const execute = (depositNonce, depositData, resourceID) => BridgeInstance.executeProposal(chainID, depositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes);
 
     before(async () => {
         await Promise.all([
@@ -280,7 +280,7 @@ contract('Gas Benchmark - [Execute Proposal]', async (accounts) => {
         await deposit(erc20ResourceID, depositData);
         await vote(erc20ResourceID, depositNonce, depositDataHash, relayerAddress);
 
-        const executeTx = await BridgeInstance.executeProposal(chainID, depositNonce, depositData, erc20ResourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, localRootHash, localKey, localNodes);
+        const executeTx = await BridgeInstance.executeProposal(chainID, depositNonce, depositData, erc20ResourceID, signatureHeader, aggregatePublicKey, hashedMessage, localRootHash, localKey, localNodes);
 
         gasBenchmarks.push({
             type: 'ERC20 - 242 elements MPT',
@@ -307,7 +307,7 @@ contract('Gas Benchmark - [Execute Proposal]', async (accounts) => {
         await deposit(erc20ResourceID, depositData);
         await vote(erc20ResourceID, depositNonce, depositDataHash, relayerAddress);
 
-        const executeTx = await BridgeInstance.executeProposal(chainID, depositNonce, depositData, erc20ResourceID, signatureHeader, aggregatePublicKey, g1, hashedMessage, localRootHash, localKey, localNodes);
+        const executeTx = await BridgeInstance.executeProposal(chainID, depositNonce, depositData, erc20ResourceID, signatureHeader, aggregatePublicKey, hashedMessage, localRootHash, localKey, localNodes);
 
         gasBenchmarks.push({
             type: 'ERC20 - 50 elements MPT',
