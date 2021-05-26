@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@ChainSafe/chainbridge-solidity": "ChainSafe/chainbridge-solidity#a50e0e3a5c",
-    "@openzeppelin/contracts": "^3.0.0"
+    "@openzeppelin/contracts": "^3.0.0",
+    "@summa-tx/memview.sol": "^1.1.0"
   }
 }
