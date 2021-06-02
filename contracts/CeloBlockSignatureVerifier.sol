@@ -8,7 +8,6 @@ import {B12_377Lib} from "./B12.sol";
 import {B12} from "./B12.sol";
 
 contract CeloBlockSignatureVerifier {
-
     using TypedMemView for bytes;
     using TypedMemView for bytes29;
 
@@ -24,27 +23,12 @@ contract CeloBlockSignatureVerifier {
         return B12.G2Point(x, y);
     }
 
-    // function doHash(bytes memory data) internal view returns (bytes memory) {
-    //     bytes32 config1 = CIP20Lib.createConfig(32 /* digest size */, 0, 0, 0, 32 /* leaf length */, 0 /* node offset */, 64 /* xof digest length*/, 0, 32 /* inner length */, bytes8(0), "ULforxof");
-    //     bytes32 config2 = CIP20Lib.createConfig(32 /* digest size */, 0, 0, 0, 32 /* leaf length */, 1, 64 /* xof digest length*/, 0, 32 /* inner length */, bytes8(0), "ULforxof");
-    //     return abi.encodePacked(CIP20Lib.blake2sWithConfig(config1, "", data), CIP20Lib.blake2sWithConfig(config2, "", data));
-    // }
-
     function doHash(bytes memory data) internal view returns (bytes memory) {
         bytes32 config1 = CIP20Lib.createConfig(32 /* digest size */, 0, 0, 0, 32 /* leaf length */, 0 /* node offset */, 64 /* xof digest length*/, 0, 32 /* inner length */, bytes8(0), "ULforxof");
         bytes32 config2 = CIP20Lib.createConfig(32 /* digest size */, 0, 0, 0, 32 /* leaf length */, 1, 64 /* xof digest length*/, 0, 32 /* inner length */, bytes8(0), "ULforxof");
         bytes32 config3 = CIP20Lib.createConfig(32 /* digest size */, 0, 1, 1, 0 /* leaf length */, 0, 64 /* xof digest length*/, 0, 0 /* inner length */, bytes8(0), "ULforxof");
         bytes memory hashedData = CIP20Lib.blake2sWithConfig(config3, "", data);
         return abi.encodePacked(CIP20Lib.blake2sWithConfig(config1, "", hashedData), CIP20Lib.blake2sWithConfig(config2, "", hashedData));
-    }
-
-    function mapToG1(B12.Fp memory x, B12.Fp memory hint1, B12.Fp memory hint2, bool greatest)
-        internal
-        view
-        returns (B12.G1Point memory) {
-        B12.G1Point memory p = B12.mapToG1(x, hint1, hint2, greatest);
-        // TODO: check that q != 0
-        return p;
     }
 
     function mapToG1Scaled(B12.Fp memory x, B12.Fp memory hint1, B12.Fp memory hint2, bool greatest)
@@ -57,22 +41,11 @@ contract CeloBlockSignatureVerifier {
         return q;
     }
 
-    function parseToG1(bytes memory h, bytes memory hints) internal view returns (B12.G1Point memory) {
-        bool greatest;
-        B12.Fp memory x;
-        (x, greatest) = B12.parseRandomPoint(h);
-        return mapToG1(x, B12.parseFp(hints, 0), B12.parseFp(hints, 64), greatest);
-    }
-
     function parseToG1Scaled(bytes memory h, bytes memory hints) internal view returns (B12.G1Point memory) {
         bool greatest;
         B12.Fp memory x;
         (x, greatest) = B12.parseRandomPoint(h);
         return mapToG1Scaled(x, B12.parseFp(hints, 0), B12.parseFp(hints, 64), greatest);
-    }
-
-    function parseG1(bytes memory blockHash, bytes memory blockHashHints) internal view returns(bytes memory) {
-        return B12.serializeG1(parseToG1(doHash(blockHash), blockHashHints));
     }
 
     function parseG1Scaled(bytes memory blockHash, bytes memory blockHashHints) internal view returns(bytes memory) {
@@ -81,13 +54,11 @@ contract CeloBlockSignatureVerifier {
 
     function checkBlock(bytes memory blockHash, bytes memory blockHashHints, bytes memory sig, bytes memory agg) internal view returns (bool) {
         B12.G1Point memory blockPoint = parseToG1Scaled(doHash(blockHash), blockHashHints);
-        return false;
-        // B12.G2Point memory apk = B12.readG2(agg, 0);
-        // B12.G1Point memory sigPoint = B12.parseG1(sig, 0);
-        // B12.PairingArg[] memory args = new B12.PairingArg[](2);
-        // args[0] = B12.PairingArg(sigPoint, negativeP2());
-        // args[1] = B12.PairingArg(blockPoint, apk);
-        // return false;
-        // return B12_377Lib.pairing(args);
+        B12.G2Point memory apk = B12.readG2(agg, 0);
+        B12.G1Point memory sigPoint = B12.parseG1(sig, 0);
+        B12.PairingArg[] memory args = new B12.PairingArg[](2);
+        args[0] = B12.PairingArg(sigPoint, negativeP2());
+        args[1] = B12.PairingArg(blockPoint, apk);
+        return B12_377Lib.pairing(args);
     }
 }

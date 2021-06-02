@@ -38,7 +38,6 @@ async function makeHint(instance, blockHash) {
   // let extra_data = extra // counter, max nonsigners, epoch
   let res = await instance.testHash(blockHash)
   // console.log(res);
-  console.log("hash result", res)
   let arr = [...Buffer.from(res.substr(2), "hex")]
   // console.log(arr.slice(0, 48))
   let needed = arr.slice(0, 48).reverse()
@@ -50,13 +49,12 @@ async function makeHint(instance, blockHash) {
   // let parsed_x = await instance.testParseToRandom(extra_data, inner_hash)
   // console.log('parsed_x', parsed_x)
   let hints = `0x${y1.toString(16).padStart(128, 0)}${y2.toString(16).padStart(128, 0)}`
-  console.log('hint', hints)
   // let point = await instance.testParseToG1Scaled(extra_data, inner_hash, hints)
   // console.log('point', point)
   return hints
 }
 
-contract("CeloBlockSignatureVerifier", function () {
+contract.skip("CeloBlockSignatureVerifier", function () {
   let instance;
   
   before(async () => {
@@ -69,21 +67,12 @@ contract("CeloBlockSignatureVerifier", function () {
     assert(res == '0x58c64608363b3d7f29e6502799625253ea7ddfafac86701f251215113d5c7c0b8a1907e541658e785a6e892c636193280f703ed74dc10a7d7749385f8be43277')
   });
 
-    // function testBlock(bytes memory blockHash, bytes memory blockHashHints, bytes memory sig, bytes memory agg)
-  // possible apk f5114c4fe7cc7b5ae24a46ec95822af0781986f96dc44101f81e282ecbbe2a433178e79a4f5756ce2cbafd27d5d4af0023e41b746acf35439a1110330c21d97845921974f1985ff5191038cf1ddc19efc4da8ab1abd6ff043823de6e9aa46781 
-  it.only('block signature verification works', async () => {
-    console.log(await instance.testG1(
-      '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802',
-      await makeHint(instance, '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802')));
-    console.log(await instance.testG1Scaled(
-      '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802',
-      await makeHint(instance, '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802')));
+  it('block signature verification works', async () => {
     let res = await instance.testBlock(
-      // '0xe53fa3f23f66592f244d34a87258f208e0f4cfaa700c624c1a75414646729b5d',
-      '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802',
-      await makeHint(instance, '0x9f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802'),
-      '0x063c39b0d4f7fa61cef3b97fe6705f02ffc209a4f3c91442588f15a884e25e68fb63cc60215ac6912f67b9fee9276501',
-      '0xaab506de1ef9b0df75f202b0813904e08d99ba0dbbf2084c3a983d9190c41f5f773489a6ee530da67d517d3151805101860dfdb8d7d72d768643af1b07a468f93ba1e08edb2a7f22c85bad3c2c02545f036647f11ce63eed3bd44e2cc080c480')
+      '0x009f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802',
+      await makeHint(instance, '0x009f70fe0d4ba5e8bf507939c00e5b1ce42d0e93edd4e1e82c4c58cee52af3e42802'),
+      '0x00000000000000000000000000000000016527e9feb9672f91c65a2160cc63fb685ee284a8158f584214c9f3a409c2ff025f70e67fb9f3ce61faf7d4b0393c060000000000000000000000000000000000a3a8fc6a0258b5bba7bb306d8e7abc147999201f61df1e65f1adbd6ba7b6037e08e966178165ba8f28101a94574853',
+      '0x0000000000000000000000000000000001518051317d517da60d53eea68934775f1fc490913d983a4c08f2bb0dba998de0043981b002f275dfb0f91ede06b5aa0000000000000000000000000000000000c480c02c4ed43bed3ee61cf14766035f54022c3cad5bc8227f2adb8ee0a13bf968a4071baf4386762dd7d7b8fd0d8600000000000000000000000000000000002f95dc47ed1188c0cc5762cf3fe3de3cbd0584eedcda9581d78dbc44dbbbc8f773003f3d024c94a04b099158d677bf0000000000000000000000000000000000eca490fa6b49e659f7e143bf06e230b6417cd7caaa65ae2e9b6a610b84559e9244879348c1a9ac06259f6fdba605e5')
     assert(res)
   });
 })
