@@ -190,6 +190,10 @@ library RLPReader {
         return result;
     }
 
+    function toBytes32(RLPItem memory item) internal pure returns (bytes32) {
+        return bytes32(toUintStrict(item));
+    }
+
     function toBytes(RLPItem memory item) internal pure returns (bytes memory) {
         require(item.len > 0);
 

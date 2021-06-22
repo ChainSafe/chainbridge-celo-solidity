@@ -2,10 +2,11 @@ const TruffleAssert = require('truffle-assertions');
 const Ethers = require('ethers');
 
 const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
-const { signatureHeader, aggregatePublicKey, hashedMessage,
-    rootHash, key, nodes, preimagePart } = require("../../proofData");
+const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
+    blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
+    preimagePart } = require('../../proofData');
 
-const BridgeContract = artifacts.require("Bridge");
+const BridgeContract = artifacts.require("BridgeGanache");
 const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
@@ -140,19 +141,20 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
             { from: destinationRelayer2Address }
         ));
 
-
         // destinationRelayer1 will execute the deposit proposal
         TruffleAssert.passes(await DestinationBridgeInstance.executeProposal(
             originChainID,
             expectedDepositNonce,
             originDepositProposalData,
             destinationResourceID,
-            signatureHeader,
+            blockHeaderRLP,
+            blockHashPrefix,
+            blockHashSuffix,
+            blockHashBLSHints,
+            blockHashSignature,
             aggregatePublicKey,
-            hashedMessage,
-            rootHash,
-            key,
-            nodes,
+            transactionMerkleKey,
+            transactionMerkleNodes,
             { from: destinationRelayer2Address }
         ));
 
@@ -211,12 +213,14 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
             expectedDepositNonce,
             destinationDepositProposalData,
             originResourceID,
-            signatureHeader,
+            blockHeaderRLP,
+            blockHashPrefix,
+            blockHashSuffix,
+            blockHashBLSHints,
+            blockHashSignature,
             aggregatePublicKey,
-            hashedMessage,
-            rootHash,
-            key,
-            nodes,
+            transactionMerkleKey,
+            transactionMerkleNodes,
             { from: originRelayer2Address }
         ));
 

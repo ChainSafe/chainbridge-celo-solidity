@@ -7,7 +7,7 @@ import {CIP20Lib} from "./CIP20Lib.sol";
 import {B12_377Lib} from "./B12.sol";
 import {B12} from "./B12.sol";
 
-contract CeloBlockSignatureVerifier {
+library CeloBlockSignatureVerifier {
     using TypedMemView for bytes;
     using TypedMemView for bytes29;
 

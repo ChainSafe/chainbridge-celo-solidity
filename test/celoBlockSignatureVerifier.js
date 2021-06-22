@@ -1,6 +1,9 @@
 const { assert } = require("chai");
 const { tonelli } = require("./tonelli")
 const TestHelperContract = artifacts.require('TestHelper');
+const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
+    blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
+    preimagePart } = require("./proofData");
 
 let base = 0x1ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001n
 let y1 = 0x001cefdc52b4e1eba6d3b6633bf15a765ca326aa36b6c0b5b1db375b6a5124fa540d200dfb56a6e58785e1aaaa63715bn
@@ -54,17 +57,12 @@ async function makeHint(instance, blockHash) {
   return hints
 }
 
+// Does not work in ganache yet. Works with normal Celo node.
 contract.skip("CeloBlockSignatureVerifier", function () {
   let instance;
   
   before(async () => {
     instance = await TestHelperContract.new();
-  });
-
-  it('blake2xs hash works', async () => {
-    let data = "0x1ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c000000000010"
-    let res = await instance.testHash(data)
-    assert(res == '0x58c64608363b3d7f29e6502799625253ea7ddfafac86701f251215113d5c7c0b8a1907e541658e785a6e892c636193280f703ed74dc10a7d7749385f8be43277')
   });
 
   it('block signature verification works', async () => {
@@ -78,5 +76,47 @@ contract.skip("CeloBlockSignatureVerifier", function () {
       // prepare_for_contract pk <apk>
       '0x0000000000000000000000000000000001518051317d517da60d53eea68934775f1fc490913d983a4c08f2bb0dba998de0043981b002f275dfb0f91ede06b5aa0000000000000000000000000000000000c480c02c4ed43bed3ee61cf14766035f54022c3cad5bc8227f2adb8ee0a13bf968a4071baf4386762dd7d7b8fd0d8600000000000000000000000000000000002f95dc47ed1188c0cc5762cf3fe3de3cbd0584eedcda9581d78dbc44dbbbc8f773003f3d024c94a04b099158d677bf0000000000000000000000000000000000eca490fa6b49e659f7e143bf06e230b6417cd7caaa65ae2e9b6a610b84559e9244879348c1a9ac06259f6fdba605e5')
     assert(res)
+  });
+
+  it('block signature verification works 2', async () => {
+    let res = await instance.testBlock(
+      // <prefix 1 byte>blockHash<round ? byte><0x02>
+      '0x0158716cb8f94e677ab9b6f5068ca8294dc9dc04c86b529a2f31165a86943c3af102',
+      // hints for <prefix 1 byte>blockHash<round ? byte><0x02>
+      '0x0000000000000000000000000000000001546bc5f3d79ed40fdfe3d360f8796ae3cb30b835c45b6ac8f0d23af74371677a593844018bfc3bd02d8ba5462de589000000000000000000000000000000000059ce8023ed7216b65b21ed0ba8cfd03657a93acb30b82456028ff4c2c5d6989cb225002e7403c4b4db345ab9d21a78',
+      // prepare_for_contract sig <sig>
+      '0x0000000000000000000000000000000000a922c1e927204a6c923bb5383963068e385a9d7feabc6f7beb08af567945c511098e8347ec7da0c9ffae3cbcd7931a0000000000000000000000000000000000ca855bdc1745df69ed53550eefbda8ebd44ec7272025d1ef458c5527e8cbcf067f529e62053de94a0528f11c67d2ca',
+      // prepare_for_contract pk <apk>
+      '0x0000000000000000000000000000000001518051317d517da60d53eea68934775f1fc490913d983a4c08f2bb0dba998de0043981b002f275dfb0f91ede06b5aa0000000000000000000000000000000000c480c02c4ed43bed3ee61cf14766035f54022c3cad5bc8227f2adb8ee0a13bf968a4071baf4386762dd7d7b8fd0d8600000000000000000000000000000000002f95dc47ed1188c0cc5762cf3fe3de3cbd0584eedcda9581d78dbc44dbbbc8f773003f3d024c94a04b099158d677bf0000000000000000000000000000000000eca490fa6b49e659f7e143bf06e230b6417cd7caaa65ae2e9b6a610b84559e9244879348c1a9ac06259f6fdba605e5')
+    assert(res)
+  });
+
+  it('block full verification works', async () => {
+    // uint8        chainID,
+    // uint64       depositNonce,
+    // bytes memory data,
+    // bytes32      resourceID,
+    // bytes memory blockHeaderRLP,
+    // bytes1       blockHashPrefix,
+    // bytes memory blockHashSuffix,
+    // bytes memory blockHashBLSHints,
+    // bytes memory blockHashSignature,
+    // bytes memory aggregatePublicKey,
+    // bytes memory transactionMerkleKey,
+    // bytes memory transactionMerkleNodes
+    await instance.testExecuteProposal(
+      0,
+      0,
+      '0x',
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+      blockHeaderRLP,
+      blockHashPrefix,
+      blockHashSuffix,
+      blockHashBLSHints,
+      blockHashSignature,
+      aggregatePublicKey,
+      transactionMerkleKey,
+      transactionMerkleNodes
+    );
   });
 })

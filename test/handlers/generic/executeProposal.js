@@ -6,10 +6,11 @@ const TruffleAssert = require('truffle-assertions');
 const Ethers = require('ethers');
 
 const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
-const { signatureHeader, aggregatePublicKey, hashedMessage,
-    rootHash, key, nodes, preimagePart } = require("../../proofData");
+const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
+    blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
+    preimagePart } = require('../../proofData');
 
-const BridgeContract = artifacts.require("Bridge");
+const BridgeContract = artifacts.require("BridgeGanache");
 const CentrifugeAssetContract = artifacts.require("CentrifugeAsset");
 const GenericHandlerContract = artifacts.require("GenericHandler");
 
@@ -98,12 +99,14 @@ contract('GenericHandler - [Execute Proposal]', async (accounts) => {
             expectedDepositNonce,
             depositData,
             resourceID,
-            signatureHeader,
+            blockHeaderRLP,
+            blockHashPrefix,
+            blockHashSuffix,
+            blockHashBLSHints,
+            blockHashSignature,
             aggregatePublicKey,
-            hashedMessage,
-            rootHash,
-            key,
-            nodes,
+            transactionMerkleKey,
+            transactionMerkleNodes,
             { from: relayer2Address }
         ));
         
@@ -145,12 +148,14 @@ contract('GenericHandler - [Execute Proposal]', async (accounts) => {
             expectedDepositNonce,
             depositData,
             resourceID,
-            signatureHeader,
+            blockHeaderRLP,
+            blockHashPrefix,
+            blockHashSuffix,
+            blockHashBLSHints,
+            blockHashSignature,
             aggregatePublicKey,
-            hashedMessage,
-            rootHash,
-            key,
-            nodes,
+            transactionMerkleKey,
+            transactionMerkleNodes,
             { from: relayer2Address }
         );
 
