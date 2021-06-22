@@ -5,6 +5,7 @@ const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
     blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
     preimagePart } = require("./proofData");
 
+// START: taken from https://github.com/mrsmkl/b12-sol/tree/875d41c5c02a46ec9b2144dc9e8f48909f8c81aa/test
 let base = 0x1ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001n
 let y1 = 0x001cefdc52b4e1eba6d3b6633bf15a765ca326aa36b6c0b5b1db375b6a5124fa540d200dfb56a6e58785e1aaaa63715bn
 let y2 = 0x01914a69c5102eff1f674f5d30afeec4bd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6n
@@ -56,6 +57,7 @@ async function makeHint(instance, blockHash) {
   // console.log('point', point)
   return hints
 }
+// END: taken from https://github.com/mrsmkl/b12-sol/tree/875d41c5c02a46ec9b2144dc9e8f48909f8c81aa/test
 
 // Does not work in ganache yet. Works with normal Celo node.
 contract.skip("CeloBlockSignatureVerifier", function () {
