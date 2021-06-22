@@ -8,11 +8,12 @@ const Ethers = require('ethers');
 
 const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 
-const BridgeContract = artifacts.require("Bridge");
+const BridgeContract = artifacts.require("BridgeGanache");
 const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const { signatureHeader, aggregatePublicKey, hashedMessage,
-    rootHash, key, nodes, preimagePart } = require("../proofData");
+const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
+    blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
+    preimagePart, blockHash } = require("../proofData");
 
 contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) => {
     const originChainID = 1;
@@ -70,7 +71,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         ]);
 
         vote = (relayer) => BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, depositDataHash, { from: relayer });
-        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer });
+        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes, { from: relayer });
     });
 
     it ('[sanity] bridge configured with threshold and relayers', async () => {
@@ -246,18 +247,17 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
     });
 
     it('Proposal cannot be executed with invalid Merkle proof', async () => {
-        const wrongKey = '0x01';
-        const customPreimagePart = rootHash.slice(2) + wrongKey.slice(2) + nodes.slice(2) +
-            aggregatePublicKey.slice(2) + hashedMessage.slice(2) + signatureHeader.slice(2);
+        const wrongKey = '0x0001';
+        const customPreimagePart = blockHash.slice(2) + wrongKey.slice(2) + aggregatePublicKey.slice(2);;
         const customDepositDataHash = Ethers.utils.keccak256(DestinationERC20HandlerInstance.address + depositData.substr(2) + customPreimagePart);
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer1Address });
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer2Address });
         BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, customDepositDataHash, { from: relayer3Address });
-        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, wrongKey, nodes, { from: relayer1Address }), "Unable to Verify Merkle Proof");
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, wrongKey, transactionMerkleNodes, { from: relayer1Address }), "Unable to verify transaction inclusion in the block");
     });
 
     it('Execution requires active proposal', async () => {
-        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer1Address }), "Proposal must have Passed status");
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes, { from: relayer1Address }), "Proposal must have Passed status");
     });
 
     it('Voting requires resourceID that is mapped to a handler', async () => {

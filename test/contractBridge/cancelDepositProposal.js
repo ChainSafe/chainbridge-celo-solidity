@@ -8,11 +8,12 @@ const Ethers = require('ethers');
 
 const Helpers = require('@ChainSafe/chainbridge-solidity/test/helpers');
 
-const BridgeContract = artifacts.require("Bridge");
+const BridgeContract = artifacts.require("BridgeGanache");
 const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const { signatureHeader, aggregatePublicKey, hashedMessage,
-    rootHash, key, nodes, preimagePart } = require("../proofData");
+const { blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints,
+    blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes,
+    preimagePart } = require("../proofData");
 
 contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) => {
     const originChainID = 1;
@@ -68,7 +69,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         ]);
 
         vote = (relayer) => BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, depositDataHash, { from: relayer });
-        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, signatureHeader, aggregatePublicKey, hashedMessage, rootHash, key, nodes, { from: relayer });
+        executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, blockHeaderRLP, blockHashPrefix, blockHashSuffix, blockHashBLSHints, blockHashSignature, aggregatePublicKey, transactionMerkleKey, transactionMerkleNodes, { from: relayer });
     });
 
     it ('[sanity] bridge configured with threshold, relayers, and expiry', async () => {
